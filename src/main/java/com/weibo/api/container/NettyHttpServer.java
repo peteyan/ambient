@@ -2,6 +2,11 @@ package main.java.com.weibo.api.container;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Range;
+import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.Channel;
+import io.netty.channel.EventLoopGroup;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
 
 /**
  * 使用 Netty 作为 HTTP 容器的服务端。
@@ -28,15 +33,23 @@ public class NettyHttpServer {
     /**
      * 启动服务端。
      */
-    public void start() {
-
+    public void start() throws Exception {
+        EventLoopGroup bossGroup = new NioEventLoopGroup();
+        EventLoopGroup workerGroup = new NioEventLoopGroup();
+        try {
+            ServerBootstrap serverBootstrap = new ServerBootstrap();
+            serverBootstrap.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class).childHandler(new NettyHttpServerInitializer());
+            Channel channel = serverBootstrap.bind(port).sync().channel();
+            channel.closeFuture().sync();
+        } finally {
+            bossGroup.shutdownGracefully();
+            workerGroup.shutdownGracefully();
+        }
     }
 
-    /**
-     * 停止服务器端。
-     */
-    public void shutdown() {
-
+    public static void main(String[] args) throws Exception {
+        int port = 8080;
+        new NettyHttpServer(port).start();
     }
 
 }
