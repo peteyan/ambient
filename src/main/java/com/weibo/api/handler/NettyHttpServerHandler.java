@@ -1,4 +1,4 @@
-package main.java.com.weibo.api.container;
+package main.java.com.weibo.api.handler;
 
 import com.google.common.base.Preconditions;
 import io.netty.buffer.Unpooled;
@@ -42,7 +42,7 @@ public class NettyHttpServerHandler extends SimpleChannelInboundHandler<HttpRequ
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, HttpRequest msg) throws Exception {
-        throw new IllegalArgumentException("Test Exception");
+        // TODO 转化成 Servlet 形式，交给指定的 servlet 处理。
     }
 
     @Override
